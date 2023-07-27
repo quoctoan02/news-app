@@ -1,6 +1,6 @@
-package com.example.mobile.controllers;
+package com.example.mobile.controller;
 
-import com.example.mobile.models.DTO.NewsDTO;
+import com.example.mobile.dto.NewsDto;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.web.bind.annotation.*;
@@ -10,11 +10,11 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/scraper")
+@RequestMapping(path = "scraper")
 public class ScraperController {
 
     @RequestMapping(value = "/data", method = RequestMethod.GET)
-    public NewsDTO getHttp(@RequestParam(name = "url") String url){
+    public NewsDto getHttp(@RequestParam(name = "url") String url){
         // @RequestParam(name = "source_id", value = "") String source) {
         try {
             Document doc = Jsoup.connect(url).get();
@@ -87,10 +87,10 @@ public class ScraperController {
 //                    }
 //                }
             // return listContent.get(index);
-            return new NewsDTO( imgLogo, listContent, listImgUrl);
+            return new NewsDto( imgLogo, listContent, listImgUrl);
         } catch (IOException e) {
             //  throw new RuntimeException(e);
-            return new NewsDTO();
+            return new NewsDto();
         }
     }
 }

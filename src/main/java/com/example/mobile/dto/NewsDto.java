@@ -1,25 +1,25 @@
-package com.example.mobile.models.DTO;
+package com.example.mobile.dto;
 
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class NewsDTO {
+public class NewsDto {
     String imgLogo;
     List<String> content;
     List<String> imageUrl;
 
 
-    public NewsDTO() {
+    public NewsDto() {
     }
 
-    public NewsDTO(List<String> content, List<String> imageUrl) {
+    public NewsDto(List<String> content, List<String> imageUrl) {
         this.content = content;
         this.imageUrl = imageUrl;
     }
 
-    public NewsDTO(String imgLogo, List<String> content, List<String> imageUrl) {
+    public NewsDto(String imgLogo, List<String> content, List<String> imageUrl) {
         this.content = content;
         this.imageUrl = imageUrl;
         this.imgLogo = imgLogo;
