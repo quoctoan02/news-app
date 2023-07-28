@@ -1,74 +1,73 @@
 package com.example.mobile.service;
 
 import com.example.mobile.dto.LoginDto;
+import com.example.mobile.dto.LoginResponseDto;
+import com.example.mobile.dto.RegisterDto;
+import com.example.mobile.exception.UserException;
 import com.example.mobile.model.User;
+import com.example.mobile.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoder;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.security.KeyStore;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
 public class AuthService {
-    final String SECRET = "2D3C8D8EF3C3C8EFBED7232914B52";
+    @Autowired
+    private UserRepository userRepository;
 
-    public String generateToken(String email) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, email);
+    @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
+    public User register(RegisterDto registerDto) {
+        Optional<User> checkExistUser = userRepository.findByEmail(registerDto.getEmail());
+        if (checkExistUser.isPresent()) throw new UserException("Email already exists");
+
+        User user = new User(
+                registerDto.getFirstName(),
+                registerDto.getLastName(),
+                registerDto.getEmail(),
+                passwordEncoder.encode(registerDto.getPassword())
+        );
+
+        User userResponse = userRepository.save(user);
+        userResponse.setPassword("");
+        return userResponse;
+
+        //   return new User(userResponse.getId(), userResponse.getFirstName(), userResponse.getLastName(), userResponse.getEmail());
     }
 
-    public String extractEmail(String token) {
-        return extractClaim(token, Claims::getSubject);
+
+    public LoginResponseDto login(LoginDto loginDto) throws UserException {
+        Optional<User> user = userRepository.findByEmail(loginDto.getEmail());
+        if (user.isPresent()) {
+            String password = loginDto.getPassword();
+            String encodedPassword = user.get().getPassword();
+            Boolean isPwdRight = passwordEncoder.matches(password, encodedPassword);
+            if (isPwdRight) {
+                String token = jwtService.generateToken(loginDto.getEmail());
+                return new LoginResponseDto(user.get(), token);
+            } else {
+                throw new UserException("Wrong password");
+            }
+        } else {
+            throw new UserException("User not found");
+        }
     }
 
-    public Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(getSignKey())
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
-
-    private String createToken(Map<String, Object> claims, String email) {
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(email)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
-                .signWith(SignatureAlgorithm.HS256, getSignKey())
-                .compact();
-    }
-
-    public boolean isTokenValid(String token, User user) {
-        final String email = extractEmail(token);
-        return (email.equals(user.getEmail())) && !isTokenExpired(token);
-    }
-
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
-    public Key getSignKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
 
 }

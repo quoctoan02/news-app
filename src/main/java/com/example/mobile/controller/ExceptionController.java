@@ -29,6 +29,8 @@ public class ExceptionController {
     public Map<String, String> handleArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("error", ex.getMessage());
+        System.out.println(ex);
+
         return errorMap;
     }
 
@@ -37,6 +39,16 @@ public class ExceptionController {
     public Map<String, String> handleUserException(UserException ex) {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("error", ex.getMessage());
+        System.out.println(ex);
+        return errorMap;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(Exception.class)
+    public Map<String, String> handleException(Exception ex) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error", ex.getMessage());
+        System.out.println(ex);
 
         return errorMap;
     }

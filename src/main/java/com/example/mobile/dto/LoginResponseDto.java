@@ -1,15 +1,13 @@
 package com.example.mobile.dto;
 
+import com.example.mobile.model.User;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.ResponseEntity;
 
 @Data
+@AllArgsConstructor
 public class LoginResponseDto {
-    String msg;
-    Boolean status;
-
-    public LoginResponseDto(String msg, Boolean status) {
-        this.msg = msg;
-        this.status = status;
-    }
+    User user;
+    String token;
 }

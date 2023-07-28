@@ -1,7 +1,8 @@
 package com.example.mobile.config;
 
+import com.example.mobile.model.CustomUserDetails;
 import com.example.mobile.model.User;
-import com.example.mobile.service.AuthService;
+import com.example.mobile.service.JwtService;
 import com.example.mobile.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,15 +13,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
-    private final AuthService authService;
+    private final JwtService jwtService;
     private final UserService userService;
 
     @Override
@@ -33,14 +37,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
         jwt = authHeader.substring(7);
-        email = authService.extractEmail(jwt);
+        email = jwtService.extractEmail(jwt);
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            User user = userService.getByEmail(email);
-            if (authService.isTokenValid(jwt, user)) {
-//                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-//                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-//                SecurityContextHolder.getContext().setAuthentication(authToken);
+            UserDetails userDetails = userService.loadUserByUsername(email);
+            if (jwtService.isTokenValid(jwt, userDetails)) {
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null);
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
+        filterChain.doFilter(request, response);
     }
 }
