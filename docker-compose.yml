@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   mysql-springboot-container:
-    image: mysql:8.0.33
+    image: mysql:8.0.34
     container_name: mysql-springboot-container
     ports:
       - "3310:3306"
