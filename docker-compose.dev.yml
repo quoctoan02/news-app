@@ -14,7 +14,7 @@ services:
       MYSQL_USER: quoctoan02
       MYSQL_PASSWORD: Abc@123456789
       MYSQL_ROOT_PASSWORD: Abc@123456789
-      MYSQL_DATABASE: StudentManagement
+      MYSQL_DATABASE: news-app
   springboot-docker-container:
     image: quoctoan02/springboot-docker:v1.0.0
     container_name: springboot-docker-container

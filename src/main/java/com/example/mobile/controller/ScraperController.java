@@ -13,13 +13,14 @@ import java.util.List;
 @RequestMapping(path = "scraper")
 public class ScraperController {
 
-    @RequestMapping(value = "/data", method = RequestMethod.GET)
-    public NewsDto getHttp(@RequestParam(name = "url") String url){
+    @GetMapping
+    public NewsDto getHttp(@RequestParam(name = "url") String url) {
         // @RequestParam(name = "source_id", value = "") String source) {
         try {
             Document doc = Jsoup.connect(url).get();
             List<String> listImgUrl = Collections.emptyList();
             List<String> listContent = Collections.emptyList();
+            List<String> listVideoUrl = Collections.emptyList();
             String imgLogo = "";
 //            switch (source) {
 //                case "vnexpress": {
@@ -27,58 +28,75 @@ public class ScraperController {
 //                }
 //            }
 
+            listVideoUrl = doc.select("video>source").eachAttr("src");
+            System.out.println(doc.select("video source"));
+            System.out.println(doc.select("video"));
+            System.out.println(doc.select("iframe"));
+
+            if (listVideoUrl.size() == 0) {
+                listVideoUrl = doc.getElementsByTag("video").eachAttr("src");
+            }
+            if (listVideoUrl.size() == 0) {
+                listVideoUrl = doc.select("iframe.cms-video").eachAttr("src");
+            }
+            if (listVideoUrl.size() == 0) {
+                listVideoUrl = doc.select("iframe").eachAttr("src");
+            }
+
             // List<String> content = doc.getElementsByTag("img").eachAttr("src");
             listImgUrl = doc.select(":not(a.logo) > img").eachAttr("data-src");
-            if(listImgUrl.size() == 0) {
+            if (listImgUrl.size() == 0) {
                 listImgUrl = doc.select("figure img").eachAttr("src");
             }
-            if(listImgUrl.size() == 0) {
+            if (listImgUrl.size() == 0) {
                 listImgUrl = doc.select(":not(a.logo) > img").eachAttr("src");
             }
-            if(listImgUrl.size() == 0) {
+            if (listImgUrl.size() == 0) {
                 listImgUrl = doc.select(":not(a) > img").eachAttr("src");
             }
-            if(listImgUrl.size() == 0) {
+            if (listImgUrl.size() == 0) {
                 listImgUrl = doc.select("img").eachAttr("src");
             }
 
             imgLogo = doc.select("a.logo > img").attr("src");
 
             listContent = doc.select("article >p").select("p").eachText();
-            if(listContent.size() == 0) {
+            if (listContent.size() == 0) {
                 listContent = doc.select("div:has(>img):has(>p)").select("p").eachText();
             }
-            if(listContent.size() == 0) {
+            if (listContent.size() == 0) {
                 String content1 = doc.select("div:has(>p):has(a>img)").select("p").text();
                 String content2 = doc.select("div:has(>p):has(:not(a)>img)").select("p").text();
-                if(content1.length() != 0 && content2.length() != 0) {
-                    if(content2.contains(content1) || content1.contains(content2)){
+                if (content1.length() != 0 && content2.length() != 0) {
+                    if (content2.contains(content1) || content1.contains(content2)) {
                         listContent = content1.length() < content2.length() ? doc.selectFirst("div:has(>p):has(a>img)").select("p").eachText() :
                                 doc.selectFirst("div:has(>p):has(:not(a)>img)").select("p").eachText();
                     } else {
                         listContent = content1.length() > content2.length() ? doc.selectFirst("div:has(>p):has(a>img)").select("p").eachText() :
                                 doc.selectFirst("div:has(>p):has(:not(a)>img)").select("p").eachText();
                     }
-                } else if(content1.length() == 0 && content2.length() != 0) {
+                } else if (content1.length() == 0 && content2.length() != 0) {
                     listContent = doc.selectFirst("div:has(>p):has(:not(a)>img)").select("p").eachText();
-                }  else if(content2.length() == 0 && content1.length() != 0){
+                } else if (content2.length() == 0 && content1.length() != 0) {
                     listContent = doc.selectFirst("div:has(>p):has(a>img)").select("p").eachText();
                 } else {
                     listContent = doc.select("div:has(img):has(>p)").select("p").eachText();
-                    if(listContent.size() > 0) {
+                    if (listContent.size() > 0) {
                         listContent = doc.selectFirst("div:has(img):has(>p)").select("p").eachText();
                     }
                 }
             }
-            if(listContent.size() == 0) {
+            if (listContent.size() == 0) {
                 listContent = doc.select("div:has(img, p)").select("p").eachText();
-                if(listContent.size() > 0) {
+                if (listContent.size() > 0) {
                     listContent = doc.selectFirst("div:has(img, p)").select("p").eachText();
                 }
             }
-            if(listContent.size() == 0) {
+            if (listContent.size() == 0) {
                 listContent = doc.selectFirst("div:has(>p)").select("p").eachText();
             }
+
+
 //                int index = 0;
 //                int elementLength = listContent.get(0).length();
 //                for(int i=1; i< listContent.size(); i++) {
@@ -87,7 +105,7 @@ public class ScraperController {
 //                    }
 //                }
             // return listContent.get(index);
-            return new NewsDto( imgLogo, listContent, listImgUrl);
+            return new NewsDto(imgLogo, listContent, listImgUrl, listVideoUrl);
         } catch (IOException e) {
             //  throw new RuntimeException(e);
             return new NewsDto();
