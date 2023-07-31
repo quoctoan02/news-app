@@ -16,7 +16,7 @@ services:
       MYSQL_ROOT_PASSWORD: Abc@123456789
       MYSQL_DATABASE: news-app
   springboot-docker-container:
-    image: quoctoan02/springboot-docker:v1.0.0
+    image: quoctoan02/springboot-docker:v2.0.0
     container_name: springboot-docker-container
     ports:
       - "8085:8088"

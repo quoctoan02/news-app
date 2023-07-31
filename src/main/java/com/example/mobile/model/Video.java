@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 public class Video {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
     @Column(name = "news_url")
     private String newsUrl;
     @Column(name = "video_url")

@@ -2,6 +2,7 @@ package com.example.mobile.controller;
 
 import com.example.mobile.dto.LoginDto;
 import com.example.mobile.dto.RegisterDto;
+import com.example.mobile.model.CustomUserDetails;
 import com.example.mobile.model.User;
 import com.example.mobile.service.AuthService;
 import com.example.mobile.service.UserService;
@@ -28,6 +29,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<Optional<User>> get(Authentication authentication) {
+        System.out.println(((CustomUserDetails) authentication.getPrincipal()).getId());
         return ResponseEntity.ok(userService.getByEmail(authentication.getName()));
     }
 }
