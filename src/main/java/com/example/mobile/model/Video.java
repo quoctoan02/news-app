@@ -9,8 +9,8 @@ public class Video {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "news_url")
-    private String newsUrl;
+    @Column(name = "link")
+    private String link;
     @Column(name = "video_url")
     private String videoUrl;
 }

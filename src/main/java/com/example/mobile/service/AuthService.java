@@ -38,8 +38,7 @@ public class AuthService {
         if (checkExistUser.isPresent()) throw new UserException("Email already exists");
 
         User user = new User(
-                registerDto.getFirstName(),
-                registerDto.getLastName(),
+                registerDto.getName(),
                 registerDto.getEmail(),
                 passwordEncoder.encode(registerDto.getPassword())
         );

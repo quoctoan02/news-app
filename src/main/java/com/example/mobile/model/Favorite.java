@@ -19,12 +19,37 @@ public class Favorite {
     @Column(name = "user_id")
     private Integer userId;
 
-    @NotNull
-    @Column(name = "news_url")
-    private String newsUrl;
+    private String title;
 
-    public Favorite(Integer userId, String newsUrl) {
+    private String content;
+
+    private String image_url;
+
+    private String description;
+
+    private String video_url;
+
+    private String source_id;
+
+    @Column(name = "pub_date")
+    private String pubDate;
+
+    private String category;
+
+    @NotNull
+    @Column(name = "link")
+    private String link;
+
+    public Favorite(@NotNull Integer userId, String title, String content, String imageUrl, String description, String videoUrl, String source_id, String category, @NotNull String link, String pubDate) {
         this.userId = userId;
-        this.newsUrl = newsUrl;
+        this.title = title;
+        this.content = content;
+        this.image_url = imageUrl;
+        this.description = description;
+        this.video_url = videoUrl;
+        this.source_id = source_id;
+        this.category = category;
+        this.link = link;
+        this.pubDate = pubDate;
     }
 }

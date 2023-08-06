@@ -3,7 +3,9 @@ package com.example.mobile.controller;
 
 import com.example.mobile.exception.UserException;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -26,8 +28,18 @@ public class ExceptionController {
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(ExpiredJwtException.class)
-    public Map<String, String> handleInvalidToken(ExpiredJwtException ex) {
+    @ExceptionHandler(JwtException.class)
+    public Map<String, String> handleInvalidToken(JwtException ex) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error", ex.getMessage());
+        System.out.println(ex);
+
+        return errorMap;
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public Map<String, String> handleUsernameNotFound(UsernameNotFoundException ex) {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("error", ex.getMessage());
         System.out.println(ex);

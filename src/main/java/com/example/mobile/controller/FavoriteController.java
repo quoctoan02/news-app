@@ -1,5 +1,7 @@
 package com.example.mobile.controller;
 
+import com.example.mobile.dto.FavoriteDto;
+import com.example.mobile.dto.ResponseDto;
 import com.example.mobile.model.CustomUserDetails;
 import com.example.mobile.model.Favorite;
 import com.example.mobile.service.FavoriteService;
@@ -24,13 +26,13 @@ public class FavoriteController {
     private FavoriteService favoriteService;
 
     @GetMapping(path = "/get-all")
-    public ResponseEntity<List<Favorite>> getAll(Authentication authentication) {
+    public ResponseEntity<ResponseDto> getAll(Authentication authentication) {
         return ResponseEntity.ok(favoriteService.getAll(((CustomUserDetails) authentication.getPrincipal()).getId()));
     }
 
     @PostMapping(path = "/save")
-    public ResponseEntity<String> save(@RequestParam String url, Authentication authentication) {
-        return ResponseEntity.ok(favoriteService.save(url, ((CustomUserDetails) authentication.getPrincipal()).getId()));
+    public ResponseEntity<ResponseDto> save(@RequestBody FavoriteDto favoriteDto, Authentication authentication) {
+        return ResponseEntity.ok(favoriteService.save(favoriteDto, ((CustomUserDetails) authentication.getPrincipal()).getId()));
     }
 
 }
