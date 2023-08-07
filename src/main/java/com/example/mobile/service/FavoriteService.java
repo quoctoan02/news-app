@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class FavoriteService {
                 favoriteDto.getDescription(),
                 favoriteDto.getVideo_url(),
                 favoriteDto.getSource_id(),
-                Arrays.toString(favoriteDto.getCategory()),
+                favoriteDto.getCategory().toString(),
                 favoriteDto.getLink(),
                 favoriteDto.getPubDate());
         favoriteRepository.save(favorite);
@@ -33,7 +34,20 @@ public class FavoriteService {
     }
 
     public ResponseDto getAll(int userId) {
-        return new ResponseDto(HttpStatus.OK.getReasonPhrase(), favoriteRepository.findAllByUserId(userId));
+        List<Favorite> favorites = favoriteRepository.findAllByUserId(userId);
+        List<FavoriteDto> favoriteDtos = new ArrayList<>();
+        for (Favorite fv : favorites) {
+            favoriteDtos.add(new FavoriteDto(fv.getTitle(),
+                    fv.getContent(),
+                    fv.getImage_url(),
+                    fv.getDescription(),
+                    fv.getVideo_url(),
+                    fv.getSource_id(),
+                    Arrays.asList(fv.getCategory().substring(1, fv.getCategory().length() - 1).split(",")),
+                    fv.getPubDate(),
+                    fv.getLink()));
+        }
+        return new ResponseDto(HttpStatus.OK.getReasonPhrase(), favoriteDtos);
     }
 
 }

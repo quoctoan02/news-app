@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 public class FavoriteDto {
@@ -20,7 +22,7 @@ public class FavoriteDto {
 
     private String source_id;
 
-    private String[] category;
+    private List<String> category;
     private String pubDate;
 
     private String link;

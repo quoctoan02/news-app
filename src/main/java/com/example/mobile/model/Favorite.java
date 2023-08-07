@@ -21,10 +21,12 @@ public class Favorite {
 
     private String title;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
 
     private String image_url;
-
+    
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
 
     private String video_url;
