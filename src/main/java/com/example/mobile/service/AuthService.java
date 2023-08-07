@@ -59,7 +59,9 @@ public class AuthService {
             Boolean isPwdRight = passwordEncoder.matches(password, encodedPassword);
             if (isPwdRight) {
                 String token = jwtService.generateToken(loginDto.getEmail());
-                return new LoginResponseDto(user.get(), token);
+                User validUser = user.get();
+                validUser.setPassword("");
+                return new LoginResponseDto(validUser, token);
             } else {
                 throw new UserException("Wrong password");
             }
